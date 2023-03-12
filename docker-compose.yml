@@ -1,0 +1,34 @@
+version: '3.4'
+
+services:
+  csmsapi:
+    image: ${DOCKER_REGISTRY-}csmsapi
+    build:
+      context: .
+      dockerfile: CsmsAPI/Dockerfile
+    depends_on:
+        - sql
+    links:
+        - sql 
+    networks:
+      - cadmusnetwork
+  sql:
+    image: "mcr.microsoft.com/mssql/server"
+    container_name: sql_server2019
+    ports: # not actually needed, because the two services are on the same network.
+      - "5566:1433" 
+    environment:
+      - ACCEPT_EULA=y
+      - SA_PASSWORD=A&VeryComplex123Password
+    networks:
+      - cadmusnetwork
+    volumes:
+      - sqlsotrage:/var/opt/mssql
+
+
+networks:
+  cadmusnetwork:
+    driver: bridge
+
+volumes:
+  sqlsotrage:

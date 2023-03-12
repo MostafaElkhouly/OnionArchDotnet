@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: C:\ProgramData\chocolatey\lib\kubernetes-kompose\tools\kompose.exe convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sql
+  name: sql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: C:\ProgramData\chocolatey\lib\kubernetes-kompose\tools\kompose.exe convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/csms-cadmusnetwork: "true"
+        io.kompose.service: sql
+    spec:
+      containers:
+        - env:
+            - name: ACCEPT_EULA
+              value: "y"
+            - name: SA_PASSWORD
+              value: A&VeryComplex123Password
+          image: mcr.microsoft.com/mssql/server
+          name: sql-server2019
+          ports:
+            - containerPort: 1433
+          resources: {}
+          volumeMounts:
+            - mountPath: /var/opt/mssql
+              name: sqlsotrage
+      restartPolicy: Always
+      volumes:
+        - name: sqlsotrage
+          persistentVolumeClaim:
+            claimName: sqlsotrage
+status: {}
